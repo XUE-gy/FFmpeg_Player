@@ -1,0 +1,11 @@
+D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
+D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug/CMakeProject_simple/CMakeFiles/CMakeProject_simple2.dir
+D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug/CMakeProject_simple/CMakeFiles/edit_cache.dir
+D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug/CMakeProject_simple/CMakeFiles/rebuild_cache.dir
+D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug/CMakeProject_normal/CMakeFiles/rebuild_cache.dir
+D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug/CMakeProject_normal/CMakeFiles/CMakeProject_normal.dir
+D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug/CMakeProject_normal/CMakeFiles/edit_cache.dir
+D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug/CMakeProject_real/CMakeFiles/littlePlayer.dir
+D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug/CMakeProject_real/CMakeFiles/edit_cache.dir
+D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug/CMakeProject_real/CMakeFiles/rebuild_cache.dir

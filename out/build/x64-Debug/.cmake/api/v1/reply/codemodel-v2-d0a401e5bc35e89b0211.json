@@ -1,0 +1,147 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "CMakeProject_simple",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "CMakeProject_simple",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "CMakeProject_normal",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "CMakeProject_normal",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "CMakeProject_real",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "CMakeProject_real",
+					"targetIndexes" : 
+					[
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						2
+					],
+					"name" : "FFmpeg_Player",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "CMakeProject_simple2",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "littlePlayer",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 2,
+					"id" : "CMakeProject_normal::@f97f026c525de009a718",
+					"jsonFile" : "target-CMakeProject_normal-Debug-92dcff47ce06364b11f5.json",
+					"name" : "CMakeProject_normal",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "CMakeProject_simple2::@4305c026e9e703a31fb4",
+					"jsonFile" : "target-CMakeProject_simple2-Debug-edc434ca7c202ac797c4.json",
+					"name" : "CMakeProject_simple2",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "littlePlayer::@833c88143f4b8bfab022",
+					"jsonFile" : "target-littlePlayer-Debug-4d84822125ade7b52b19.json",
+					"name" : "littlePlayer",
+					"projectIndex" : 2
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player/out/build/x64-Debug",
+		"source" : "D:/vs2019/vsHistoryProject/Visual Studio 2019/FFmpeg_Player"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 0
+	}
+}
