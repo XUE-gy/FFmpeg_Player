@@ -14,7 +14,7 @@ int main_refresh_video(void* opaque) {
 		SDL_Event event;
 		event.type = REFRESH_EVENT;
 		SDL_PushEvent(&event);
-		SDL_Delay(40);
+		SDL_Delay(1);
 	}
 	thread_exit = 0;
 	//Break
@@ -30,6 +30,8 @@ int main_refresh_video(void* opaque) {
 static  Uint8* audio_chunk;
 static  Uint32  audio_len;
 static  Uint8* audio_pos;
+
+#define MAX_AUDIO_FRAME_SIZE 192000 // 1 second of 48khz 32bit audio
 
 void  audio_callback(void* udata, Uint8* stream, int len) {
 	//SDL 2.0
@@ -55,19 +57,21 @@ int main(int argc, char* argv[])
 	AVCodec* pCodec,*pCodec2;
 	AVFrame* pFrame, * pFrameYUV,*pFrame2;
 	uint8_t* out_buffer;
+	uint8_t* pcm_buffer;
 	AVPacket* packet;
 	int y_size;
-	int ret, got_picture;
+	int ret,ret2 , got_picture, got_picture2;
 	struct SwsContext* img_convert_ctx;
-	//输入文件路径
-	char filepath[] = "J:/学习4/多媒体播放器实践/工具/testvideo/Titanic.ts";
-	int frame_cnt;
+	//文件路径
+	char filepath[] = "J:/FFOutput/fuchouzhe.mp4";
+	//char filepath[] = "J:/学习4/多媒体播放器实践/工具/testvideo/Forrest_Gump_IMAX.mp4";
+	
+	int frame_cnt,frame_cnt_2;
 	const int bpp = 12;
-
-
 	const int pixel_w = 640, pixel_h = 360;
 
-	//unsigned char buffer[pixel_w * pixel_h * bpp / 8];
+	struct SwrContext* au_convert_ctx;
+
 
 
 
@@ -154,7 +158,7 @@ int main(int argc, char* argv[])
 
 
 	//SDL视频初始化
-	if (SDL_Init(SDL_INIT_VIDEO)) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)) {
 		printf("Could not initialize SDL - %s\n", SDL_GetError());
 		return -1;
 	}
@@ -183,81 +187,127 @@ int main(int argc, char* argv[])
 
 	//SDL音频初始化
 	SDL_AudioSpec wanted_spec;
-	wanted_spec.freq = pCodecCtx2->sample_rate;
+	int64_t in_channel_layout;
+
+	packet = (AVPacket*)av_malloc(sizeof(AVPacket));
+	av_init_packet(packet);
+
+	//Out Audio Param
+	uint64_t out_channel_layout = AV_CH_LAYOUT_STEREO;
+	//nb_samples: AAC-1024 MP3-1152
+	int out_nb_samples = pCodecCtx2->frame_size;
+	AVSampleFormat out_sample_fmt = AV_SAMPLE_FMT_S16;
+	int out_sample_rate = 44100;
+	int out_channels = av_get_channel_layout_nb_channels(out_channel_layout);
+	//Out Buffer Size
+	int out_buffer_size = av_samples_get_buffer_size(NULL, out_channels, out_nb_samples, out_sample_fmt, 1);
+
+	pcm_buffer = (uint8_t*)av_malloc(MAX_AUDIO_FRAME_SIZE * 2);
+	pFrame2 = av_frame_alloc();
+	//SDL------------------
+	//Init
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)) {
+		printf("Could not initialize SDL - %s\n", SDL_GetError());
+		return -1;
+	}
+	//SDL_AudioSpec
+	wanted_spec.freq = out_sample_rate;
 	wanted_spec.format = AUDIO_S16SYS;
-	wanted_spec.channels = pCodecCtx2->channels;
+	wanted_spec.channels = out_channels;
 	wanted_spec.silence = 0;
-	wanted_spec.samples = 1024;//音频缓冲区大小
+	wanted_spec.samples = out_nb_samples;
 	wanted_spec.callback = audio_callback;
 	wanted_spec.userdata = pCodecCtx2;
+
 	if (SDL_OpenAudio(&wanted_spec, NULL) < 0) {
 		printf("can't open audio.\n");
 		return -1;
 	}
-	SDL_PauseAudio(0);
 
-	int pcm_buffer_size = 1024;
-	char* pcm_buffer = (char*)malloc(pcm_buffer_size);
-	int data_count = 0;
+
+	//FIX:Some Codec's Context Information is missing
+	in_channel_layout = av_get_default_channel_layout(pCodecCtx2->channels);
+	//Swr
+
+	au_convert_ctx = swr_alloc();
+	au_convert_ctx = swr_alloc_set_opts(au_convert_ctx, out_channel_layout, out_sample_fmt, out_sample_rate,
+		in_channel_layout, pCodecCtx2->sample_fmt, pCodecCtx2->sample_rate, 0, NULL);
+	swr_init(au_convert_ctx);
+
+	//Play
+	SDL_PauseAudio(0);
 
 
 	frame_cnt = 0;
+	frame_cnt_2 = 0;
+
 	while (av_read_frame(pFormatCtx, packet) >= 0) {
 		if (packet->stream_index == videoindex) {
 
-			//SDL_Rect sdlRect;
-			//SDL_Event event;
-
-
-			//ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, packet);
-			//if (ret < 0) {
-			//	printf("Decode Error.\n");
-			//	return -1;
-			//}
-			//if (got_picture) {
-			//	sws_scale(img_convert_ctx, (const uint8_t* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
-			//		pFrameYUV->data, pFrameYUV->linesize);
-			//	printf("Decoded frame index: %d\n", frame_cnt); frame_cnt++;
+			SDL_Rect sdlRect;
+			SDL_Event event;
+			ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, packet);
+			if (ret < 0) {
+				printf("Decode Error.\n");
+				return -1;
+			}
+			if (got_picture) {
+				sws_scale(img_convert_ctx, (const uint8_t* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
+					pFrameYUV->data, pFrameYUV->linesize);
+				printf("Decoded frame index: %d\n", frame_cnt); frame_cnt++;
 
 			//	//SDL_Delay(40);
 
-			//}
-			//SDL_WaitEvent(&event);
-			//if (event.type == REFRESH_EVENT) {
-			//	SDL_UpdateTexture(sdlTexture, NULL, pFrameYUV->data[0], pFrameYUV->linesize[0]);
-			//	sdlRect.x = 0;
-			//	sdlRect.y = 0;
-			//	sdlRect.w = screen_w;
-			//	sdlRect.h = screen_h;
-			//	SDL_RenderClear(sdlRenderer);
-			//	SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, &sdlRect);
-			//	SDL_RenderPresent(sdlRenderer);
+			}
+			SDL_WaitEvent(&event);
+			if (event.type == REFRESH_EVENT) {
+				SDL_UpdateTexture(sdlTexture, NULL, pFrameYUV->data[0], pFrameYUV->linesize[0]);
+				sdlRect.x = 0;
+				sdlRect.y = 0;
+				sdlRect.w = screen_w;
+				sdlRect.h = screen_h;
+				SDL_RenderClear(sdlRenderer);
+				SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, &sdlRect);
+				SDL_RenderPresent(sdlRenderer);
 
-			//}
-			//else if (event.type == SDL_WINDOWEVENT) {//System own function
-			//   //If Resize
-			//	SDL_GetWindowSize(screen, &screen_w, &screen_h);
-			//}
-			//else if (event.type == SDL_QUIT) {
-			//	thread_exit = 1;
-			//}
-			//else if (event.type == BREAK_EVENT) {
-			//	break;
-			//}
+			}
+			else if (event.type == SDL_WINDOWEVENT) {//System own function
+			   //If Resize
+				SDL_GetWindowSize(screen, &screen_w, &screen_h);
+			}
+			else if (event.type == SDL_QUIT) {
+				thread_exit = 1;
+			}
+			else if (event.type == BREAK_EVENT) {
+				break;
+			}
 
 		}
 		else if (packet->stream_index == audioindex) {
-			printf("音频帧");
-			data_count += pcm_buffer_size;
-			//Set audio buffer (PCM data)
-			pcm_buffer =
+			ret2 = avcodec_decode_audio4(pCodecCtx2, pFrame2, &got_picture2, packet);
+			if (ret2 < 0) {
+				printf("Error in decoding audio frame.\n");
+				return -1;
+			}
+			if (got_picture2 > 0) {
+				swr_convert(au_convert_ctx, &pcm_buffer, MAX_AUDIO_FRAME_SIZE, (const uint8_t**)pFrame2->data, pFrame2->nb_samples);
 
-			audio_chunk = (Uint8*)pcm_buffer;
-			//Audio buffer length
-			audio_len = pcm_buffer_size;
-			audio_pos = audio_chunk;
+				printf("index:%5d\t pts:%lld\t packet size:%d\n", frame_cnt_2, packet->pts, packet->size);
+
+
+
+
+				frame_cnt_2++;
+			}
 			while (audio_len > 0)//Wait until finish
 				SDL_Delay(1);
+
+			//Set audio buffer (PCM data)
+			audio_chunk = (Uint8*)pcm_buffer;
+			//Audio buffer length
+			audio_len = out_buffer_size;
+			audio_pos = audio_chunk;
+
 
 		}
 		av_free_packet(packet);
@@ -266,12 +316,17 @@ int main(int argc, char* argv[])
 
 	SDL_Quit();
 
-	free(pcm_buffer);
+	
 
 	sws_freeContext(img_convert_ctx);
 
 	av_frame_free(&pFrameYUV);
 	av_frame_free(&pFrame);
+	avcodec_close(pCodecCtx);
+	avformat_close_input(&pFormatCtx);
+
+
+	free(pcm_buffer);
 	avcodec_close(pCodecCtx);
 	avformat_close_input(&pFormatCtx);
 

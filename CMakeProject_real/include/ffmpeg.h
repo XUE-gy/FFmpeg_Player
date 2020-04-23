@@ -3,6 +3,8 @@ extern "C"
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
 #include "libswscale/swscale.h"
+#include "libswresample/swresample.h"
+
 #include "SDL.h"
 #include "al.h"
 #include "alc.h"

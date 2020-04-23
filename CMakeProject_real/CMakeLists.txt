@@ -107,7 +107,9 @@ message(SWSCALE_LIBRARY=${SWSCALE_LIBRARY})
 ############################################
 add_executable (${PROJECT_NAME} 
 	 #"src/sdl_simple.cpp"
-	 "src/main.cpp"
+	 #"src/main.cpp"
+	 #"src/sdl_audioplayer_simple.cpp"
+	 "src/sdl_audio_video_player.cpp"
 	 )
 
 
