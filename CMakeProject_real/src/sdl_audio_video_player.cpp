@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 	int ret,ret2 , got_picture, got_picture2;
 	struct SwsContext* img_convert_ctx;
 	//文件路径
-	char filepath[] = "J:/FFOutput/fuchouzhe.mp4";
+	char filepath[] = "D:/test.mp4";
 	//char filepath[] = "J:/学习4/多媒体播放器实践/工具/testvideo/Forrest_Gump_IMAX.mp4";
 	
 	int frame_cnt,frame_cnt_2;

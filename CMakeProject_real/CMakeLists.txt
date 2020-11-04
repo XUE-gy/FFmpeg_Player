@@ -46,26 +46,40 @@ find_library(SWSCALE_LIBRARY swscale)
 
 
 
-######################################
-#  SDL2 lib setting
-######################################
-#make sure SDL2.dll is in your PATH.
+  set(CMAKE_INCLUDE_PATH
+         "D:/dependence/ffmpeg-20191013-4f4334b-win64-static/bin/include"
+        )
+ 
+ set(CMAKE_LIBRARY_PATH
+         "D:/dependence/ffmpeg-20191013-4f4334b-win64-static/bin/bin"
+        )
 
-#set(SDL_INCLUDE_DIR "D:\ffmpeg-20191013-4f4334b-win64-static\tools\SDL\include")
-#set(SDL_LIBRARY "D:\ffmpeg-20191013-4f4334b-win64-static\tools\SDL\lib\SDL2.lib")
-set(SDL_INCLUDE_DIR "D:/ffmpeg-20191013-4f4334b-win64-static/tools/SDL/include")
-set(SDL_LIBRARY "D:/ffmpeg-20191013-4f4334b-win64-static/tools/SDL/lib/x64/SDL2.lib") 
+set(SDL_INCLUDE_DIR "D:/dependence/ffmpeg-20191013-4f4334b-win64-static/tools/SDL/include")
+set(SDL_LIBRARY "D:/dependence/ffmpeg-20191013-4f4334b-win64-static/tools/SDL/lib/x64/SDL2.lib") 
+ 
+ 
+ 
+set(JRTPLIB_INCLUDE_PATH   "D:/dependence/jrtplib/x64-Release/include/jrtplib3")
+set(JRTP_LIBRARY   "D:/dependence/jrtplib/x64-Release/lib/jrtplib.lib")
 
+ set(JTHREAD_INCLUDE_DIR   "D:/dependence/jthread/x64-Release/include") 
+ set(JTHREAD_LIBRARY   "D:/dependence/jthread/x64-Release/lib/jthread.lib")
  
 
-######################################
-#  OpenAL lib setting
-######################################
-#make sure openAL32.dll is in your PATH.
 
-set(OpenAL_INCLUDE_DIR "D:/ffmpeg-20191013-4f4334b-win64-static/tools/OpenAL/include")
-set(OpenAL_LIBRARY "D:/ffmpeg-20191013-4f4334b-win64-static/tools/OpenAL/libs/Win64/OpenAL32.lib")
- 
+  #[[
+set(JRTPLIB_INCLUDE_PATH   "D:/dependence/jrtp/jrtplib/x64-Debug/include/jrtplib3")
+set(JRTP_LIBRARY   "D:/dependence/jrtp/jrtplib/x64-Debug/lib/cq/jrtplib_d.lib")
+
+set(JTHREAD_INCLUDE_DIR   "D:/dependence/jrtp/jthread/x64-Debug/include") 
+set(JTHREAD_LIBRARY   "D:/dependence/jrtp/jthread/x64-Debug/lib/cq/jthread_d.lib")
+]]
+
+
+set(ASIO_DIR   "D:/dependence/asio-1.16.1/include")
+
+set(OPENAL_INCLUDE_DIR "D:/dependence/OpenAL 1.1 SDK/include")
+set(OPENAL_LIBRARY "D:/dependence/OpenAL 1.1 SDK/libs/Win64/OpenAL32.lib")
    
 
 ######################################
@@ -125,7 +139,7 @@ target_include_directories( ${PROJECT_NAME}
 		${SWRESAMPLE_INCLUDE_DIR}
 		${SWSCALE_INCLUDE_DIR}
 		${SDL_INCLUDE_DIR}
-		${OpenAL_INCLUDE_DIR}
+		${OPENAL_INCLUDE_DIR}
 
 )
 
@@ -140,7 +154,7 @@ target_link_libraries( ${PROJECT_NAME}
 		${SWRESAMPLE_LIBRARY}
 		${SWSCALE_LIBRARY}
 		${SDL_LIBRARY}
-		${OpenAL_LIBRARY}
+		${OPENAL_LIBRARY}
 
 )
 
